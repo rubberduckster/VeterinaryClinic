@@ -19,6 +19,7 @@ namespace VeterinaryClinic
 
             connection.Open();
 
+            // Makes GO readable
             string[] batches = script.Split(new[] { "\r\nGO\r\n", "\nGO\n" },StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string batch in batches)

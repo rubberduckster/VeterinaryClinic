@@ -78,5 +78,8 @@ CREATE TABLE Medication
     Dosage NVARCHAR(100),
     Instructions NVARCHAR(500),
 
+    CONSTRAINT CK_Medication_Name
+    CHECK (LEN(Name) > 0),
+
     FOREIGN KEY (AppointmentId) REFERENCES Appointment(Id)
 );
