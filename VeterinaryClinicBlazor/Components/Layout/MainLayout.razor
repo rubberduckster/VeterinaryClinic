@@ -1,0 +1,22 @@
+﻿@inherits LayoutComponentBase
+@using VeterinaryClinicBlazor.Services
+@inject LanguageState LanguageState
+
+<div class="page">
+    <header class="topbar">
+        <a href="/" class="brand">
+            @(LanguageState.SelectedLanguage == "da"
+                        ? "Dyreklinik"
+                        : "Veterinary Clinic")
+        </a>
+
+        <select class="language-select" @bind="LanguageState.SelectedLanguage">
+            <option value="en">English</option>
+            <option value="da">Dansk</option>
+        </select>
+    </header>
+
+    <main class="content">
+        @Body
+    </main>
+</div>

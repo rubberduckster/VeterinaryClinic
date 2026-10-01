@@ -1,0 +1,52 @@
+﻿@page "/"
+@implements IDisposable
+@using VeterinaryClinic.Services
+@using VeterinaryClinicBlazor.Services
+@inject DatabaseService DatabaseService
+@inject LanguageState LanguageState
+
+<PageTitle>
+    @(LanguageState.SelectedLanguage == "da"
+        ? "Dyreklinik"
+        : "Veterinary Clinic")
+</PageTitle>
+
+<h1>
+    @(LanguageState.SelectedLanguage == "da"
+        ? "Dyreklinik Database"
+        : "Veterinary Clinic Database")
+</h1>
+
+<select id="tableSelect" class="form-select" @bind="selectedTable">
+    @foreach (string tableName in tableNames)
+    {
+        <option value="@tableName">@tableName</option>
+    }
+</select>
+
+@if (!string.IsNullOrEmpty(selectedTable))
+{
+    <DatabaseTable TableName="@selectedTable" />
+}
+
+@code {
+    private List<string> tableNames = new List<string>();
+    private string selectedTable = "";
+
+    protected override void OnInitialized()
+    {
+        tableNames = DatabaseService.GetTableNames();
+
+        if (tableNames.Count > 0)
+        {
+            selectedTable = tableNames[0];
+        }
+
+        LanguageState.OnLanguageChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        LanguageState.OnLanguageChanged -= StateHasChanged;
+    }
+}

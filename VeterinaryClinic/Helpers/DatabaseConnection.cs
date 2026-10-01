@@ -12,12 +12,12 @@ namespace VeterinaryClinic.Helpers
 
         public static void LoginAsUser()
         {
-            ConnectionString ="Server=localhost;Database=VeterinaryClinic;User Id=clinicUser;Password=U53R11111;TrustServerCertificate=True;";
+            ConnectionString ="Server=localhost;Database=VeterinaryClinic;User Id=clinicUser;Password=...;TrustServerCertificate=True;";
         }
 
         public static void LoginAsAdmin()
         {
-            ConnectionString ="Server=localhost;Database=VeterinaryClinic;User Id=clinicAdmin;Password=4DM1N11111;TrustServerCertificate=True;";
+            ConnectionString ="Server=localhost;Database=VeterinaryClinic;User Id=clinicAdmin;Password=...;TrustServerCertificate=True;";
         }
     }
 }

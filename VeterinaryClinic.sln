@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VeterinaryClinic", "VeterinaryClinic\VeterinaryClinic.csproj", "{6D1FF233-1B65-49C3-92DD-811358478690}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VeterinaryClinicBlazor", "VeterinaryClinicBlazor\VeterinaryClinicBlazor.csproj", "{B6D84765-21C7-4D04-937F-FF01054428DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{6D1FF233-1B65-49C3-92DD-811358478690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D1FF233-1B65-49C3-92DD-811358478690}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D1FF233-1B65-49C3-92DD-811358478690}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6D84765-21C7-4D04-937F-FF01054428DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6D84765-21C7-4D04-937F-FF01054428DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6D84765-21C7-4D04-937F-FF01054428DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6D84765-21C7-4D04-937F-FF01054428DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

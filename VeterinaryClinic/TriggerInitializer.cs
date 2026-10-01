@@ -11,7 +11,7 @@ namespace VeterinaryClinic
     {
         public static void CreateTriggers()
         {
-            string connectionString = "Server=(localdb)\\MSSQLLocalDB;Database=VeterinaryClinic;Trusted_Connection=True;";
+            string connectionString = "Server=localhost;Database=VeterinaryClinic;Trusted_Connection=True;TrustServerCertificate=True;";
 
             using SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();

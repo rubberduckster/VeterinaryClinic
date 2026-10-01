@@ -1,0 +1,53 @@
+﻿@using VeterinaryClinic.Services
+@inject DatabaseService DatabaseService
+
+@if (!string.IsNullOrEmpty(TableName))
+{
+    <h3 class="mt-4">@TableName</h3>
+
+    @if (rows.Count > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    @foreach (string columnName in rows[0].Keys)
+                    {
+                        <th>@columnName</th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (Dictionary<string, object> row in rows)
+                {
+                    <tr>
+                        @foreach (object value in row.Values)
+                        {
+                            <td>@value</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>This table contains no data.</p>
+    }
+}
+
+@code {
+    [Parameter]
+    public string TableName { get; set; } = "";
+
+    private List<Dictionary<string, object>> rows =
+        new List<Dictionary<string, object>>();
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(TableName))
+        {
+            rows = DatabaseService.GetTableData(TableName);
+        }
+    }
+}
