@@ -51,8 +51,7 @@ namespace VeterinaryClinic.Repositories
                 throw new ArgumentException("Invalid table name.");
             }
 
-            Dictionary<string, string> columnNames =
-                new Dictionary<string, string>();
+            Dictionary<string, string> columnNames = new Dictionary<string, string>();
 
             using SqlConnection connection = new SqlConnection(connectionString);
             connection.Open();
@@ -149,9 +148,7 @@ namespace VeterinaryClinic.Repositories
 
             foreach (KeyValuePair<string, object> value in values)
             {
-                command.Parameters.AddWithValue(
-                    $"@{value.Key}",
-                    value.Value ?? DBNull.Value);
+                command.Parameters.AddWithValue($"@{value.Key}", value.Value ?? DBNull.Value);
             }
 
             command.ExecuteNonQuery();
@@ -190,9 +187,7 @@ namespace VeterinaryClinic.Repositories
             {
                 if (value.Key != "Id")
                 {
-                    command.Parameters.AddWithValue(
-                        $"@{value.Key}",
-                        value.Value ?? DBNull.Value);
+                    command.Parameters.AddWithValue($"@{value.Key}", value.Value ?? DBNull.Value);
                 }
             }
 
@@ -228,8 +223,7 @@ namespace VeterinaryClinic.Repositories
         {
             List<string> tableNames = GetTableNames();
 
-            Dictionary<string, int> tableRowCounts =
-                new Dictionary<string, int>();
+            Dictionary<string, int> tableRowCounts = new Dictionary<string, int>();
 
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();

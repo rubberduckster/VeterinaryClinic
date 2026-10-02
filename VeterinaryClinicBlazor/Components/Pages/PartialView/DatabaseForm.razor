@@ -65,14 +65,11 @@
     [Parameter]
     public Dictionary<string, object>? Row { get; set; }
 
-    private Dictionary<string, string> columnNames =
-        new Dictionary<string, string>();
+    private Dictionary<string, string> columnNames = new Dictionary<string, string>();
 
-    private Dictionary<string, string> formValues =
-        new Dictionary<string, string>();
+    private Dictionary<string, string> formValues = new Dictionary<string, string>();
 
-    private Dictionary<string, string> fieldErrors =
-    new Dictionary<string, string>();
+    private Dictionary<string, string> fieldErrors = new Dictionary<string, string>();
 
     private string previousTableName = "";
     private object? previousRowId;
@@ -93,9 +90,7 @@
             currentRowId = Row["Id"];
         }
 
-        bool formChanged =
-            TableName != previousTableName ||
-            !Equals(currentRowId, previousRowId);
+        bool formChanged = TableName != previousTableName ||!Equals(currentRowId, previousRowId);
 
         if (!string.IsNullOrEmpty(TableName) && formChanged)
         {
@@ -125,8 +120,7 @@
 
     private async Task Save()
     {
-        Dictionary<string, object> convertedValues =
-            new Dictionary<string, object>();
+        Dictionary<string, object> convertedValues = new Dictionary<string, object>();
 
         fieldErrors.Clear();
 
