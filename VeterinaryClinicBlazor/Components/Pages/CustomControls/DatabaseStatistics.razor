@@ -1,0 +1,112 @@
+﻿@using VeterinaryClinic.Services
+@using VeterinaryClinicBlazor.Services
+@inject DatabaseService DatabaseService
+@inject LanguageState LanguageState
+@implements IDisposable
+
+<div class="database-statistics">
+    <h2>
+        @(LanguageState.SelectedLanguage == "da"
+            ? "Statistik"
+            : "Statistics")
+    </h2>
+
+    @if (isLoading)
+    {
+        <p>
+            @(LanguageState.SelectedLanguage == "da"
+                ? "Indlæser..."
+                : "Loading...")
+        </p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @(LanguageState.SelectedLanguage == "da"
+                            ? "Tabel"
+                            : "Table")
+                    </th>
+                    <th>
+                        @(LanguageState.SelectedLanguage == "da"
+                            ? "Rækker"
+                            : "Rows")
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (KeyValuePair<string, int> table in tableRowCounts)
+                {
+                    <tr>
+                        <td>@table.Key</td>
+                        <td>@table.Value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private Dictionary<string, int> tableRowCounts =
+        new Dictionary<string, int>();
+
+    private PeriodicTimer? timer;
+    private CancellationTokenSource cancellationTokenSource =
+        new CancellationTokenSource();
+
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        LanguageState.OnLanguageChanged += StateHasChanged;
+
+        await LoadStatistics();
+
+        timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+
+        _ = UpdateStatistics();
+    }
+
+    private async Task UpdateStatistics()
+    {
+        if (timer == null)
+            return;
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(
+                cancellationTokenSource.Token))
+            {
+                await LoadStatistics();
+
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // The component was closed, so the background loop stops.
+        }
+    }
+
+    public void Dispose()
+    {
+        LanguageState.OnLanguageChanged -= StateHasChanged;
+
+        cancellationTokenSource.Cancel();
+        timer?.Dispose();
+        cancellationTokenSource.Dispose();
+    }
+
+    private async Task LoadStatistics()
+    {
+        isLoading = true;
+
+        tableRowCounts = await DatabaseService.GetTableRowCounts();
+
+        isLoading = false;
+    }
+}

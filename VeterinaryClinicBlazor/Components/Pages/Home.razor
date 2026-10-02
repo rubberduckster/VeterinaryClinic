@@ -1,9 +1,9 @@
 ﻿@page "/"
-@implements IDisposable
 @using VeterinaryClinic.Services
 @using VeterinaryClinicBlazor.Services
 @inject DatabaseService DatabaseService
 @inject LanguageState LanguageState
+@implements IDisposable
 
 <PageTitle>
     @(LanguageState.SelectedLanguage == "da"
@@ -11,27 +11,59 @@
         : "Veterinary Clinic")
 </PageTitle>
 
-<h1>
-    @(LanguageState.SelectedLanguage == "da"
-        ? "Dyreklinik Database"
-        : "Veterinary Clinic Database")
-</h1>
+<div class="database-content">
 
-<select id="tableSelect" class="form-select" @bind="selectedTable">
-    @foreach (string tableName in tableNames)
-    {
-        <option value="@tableName">@tableName</option>
-    }
-</select>
+    <div class="database-table-section">
 
-@if (!string.IsNullOrEmpty(selectedTable))
-{
-    <DatabaseTable TableName="@selectedTable" />
-}
+        <div class="table-selection">
+            <h2>@selectedTable</h2>
+
+            <select id="tableSelect"
+                    class="form-select table-select"
+                    @bind="selectedTable">
+                @foreach (string tableName in tableNames)
+                {
+                    <option value="@tableName">@tableName</option>
+                }
+            </select>
+        </div>
+
+        @if (!string.IsNullOrEmpty(selectedTable))
+        {
+            <DatabaseTable TableName="@selectedTable" />
+        }
+
+    </div>
+
+    <div class="right-section">
+
+        <div class="statistics-section">
+            <DatabaseStatistics />
+        </div>
+
+        <div class="notes-section">
+            <h2>
+                @(LanguageState.SelectedLanguage == "da"
+                    ? "Noter"
+                    : "Notes")
+            </h2>
+
+            <textarea class="notes-input"
+                      @bind="notes"
+                      placeholder="@(LanguageState.SelectedLanguage == "da"
+                                  ? "Skriv noter her..."
+                                  : "Write notes here...")">
+        </textarea>
+    </div>
+
+</div>
+
+</div>
 
 @code {
     private List<string> tableNames = new List<string>();
     private string selectedTable = "";
+    private string notes = "";
 
     protected override void OnInitialized()
     {

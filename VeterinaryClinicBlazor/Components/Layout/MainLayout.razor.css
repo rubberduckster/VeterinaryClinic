@@ -1,5 +1,7 @@
 .page {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .topbar {
@@ -8,6 +10,7 @@
     align-items: center;
     padding: 0 2rem;
     border-bottom: 1px solid #ddd;
+    background-color: #304b43;
 }
 
 .brand {
@@ -15,10 +18,14 @@
     font-weight: 600;
     text-decoration: none;
     color: inherit;
+    color: white;
 }
 
 .content {
     padding: 2rem;
+    flex: 1;
+    background-color: #f5f8f7;
+    min-height: calc(100vh - 57px);
 }
 
 .language-select {

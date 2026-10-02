@@ -1,0 +1,52 @@
+.add-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+}
+
+.database-table {
+    width: 100%;
+    table-layout: fixed;
+    margin-bottom: 0;
+}
+
+.database-table thead {
+    background-color: #e8f1ee;
+}
+
+.database-table th {
+    color: #304b43;
+    border-bottom: 2px solid #b8cbc5;
+}
+
+.database-table td {
+    vertical-align: middle;
+}
+
+.database-table tbody tr:nth-child(even) {
+    background-color: #f7faf9;
+}
+
+.actions-column {
+    text-align: right;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.delete-modal {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    min-width: 350px;
+}

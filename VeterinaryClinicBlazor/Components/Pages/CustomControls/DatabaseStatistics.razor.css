@@ -1,0 +1,16 @@
+.database-statistics table {
+    margin-bottom: 0;
+}
+
+.database-statistics thead {
+    background-color: #e8f1ee;
+}
+
+.database-statistics th {
+    color: #304b43;
+    border-bottom: 2px solid #b8cbc5;
+}
+
+.database-statistics tbody tr:nth-child(even) {
+    background-color: #f7faf9;
+}

@@ -1,0 +1,234 @@
+﻿@using VeterinaryClinic.Services
+@inject DatabaseService DatabaseService
+@using VeterinaryClinicBlazor.Services
+@inject LanguageState LanguageState
+@implements IDisposable
+
+@if (!string.IsNullOrEmpty(TableName))
+{
+    <div class="add-button-container">
+        <button class="btn btn-primary" @onclick="OpenAddForm">
+            @(LanguageState.SelectedLanguage == "da"
+                ? "Tilføj"
+                : "Add")
+        </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(saveErrorMessage))
+    {
+        <div class="alert alert-danger mt-3">
+            @saveErrorMessage
+        </div>
+    }
+
+    <DatabaseForm IsVisible="@showForm"
+                  TableName="@TableName"
+                  Title="@(selectedRow == null ? $"Add {TableName}" : $"Edit {TableName}")"
+                  Row="@selectedRow"
+                  OnSave="SaveRow"
+                  OnCancel="CloseForm" />
+
+    @if (rows.Count > 0)
+    {
+        <table class="table database-table">
+            <thead>
+                <tr>
+                    @foreach (string columnName in rows[0].Keys)
+                    {
+                        <th>@columnName</th>
+                    }
+
+                    <th class="actions-column">
+                        @(LanguageState.SelectedLanguage == "da" ? "Handlinger" : "Actions")
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (Dictionary<string, object> row in rows)
+                {
+                    <tr>
+                        @foreach (object value in row.Values)
+                        {
+                            <td>@value</td>
+                        }
+
+                        <td class="actions-column">
+                            <button class="btn btn-sm btn-secondary"
+                                    @onclick="() => OpenEditForm(row)">
+                                @(LanguageState.SelectedLanguage == "da" ? "Rediger" : "Edit")
+                            </button>
+
+                            <button class="btn btn-sm btn-danger"
+                                    @onclick="() => rowToDelete = row">
+                                @(LanguageState.SelectedLanguage == "da" ? "Slet" : "Delete")
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>
+            @(LanguageState.SelectedLanguage == "da"
+                ? "Denne tabel indeholder ingen data."
+                : "This table contains no data.")
+        </p>
+    }
+
+    @if (rowToDelete != null)
+    {
+        <div class="modal-overlay">
+            <div class="delete-modal">
+                <h4>
+                    @(LanguageState.SelectedLanguage == "da"
+                        ? "Slet række?"
+                        : "Delete row?")
+                </h4>
+
+                <p>
+                    @(LanguageState.SelectedLanguage == "da"
+                        ? "Er du sikker på, at du vil slette denne række?"
+                        : "Are you sure you want to delete this row?")
+                </p>
+
+                @if (!string.IsNullOrEmpty(deleteErrorMessage))
+                {
+                    <div class="alert alert-danger">
+                        @deleteErrorMessage
+                    </div>
+                }
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <button class="btn btn-secondary"
+                            @onclick="CancelDelete">
+                        @(LanguageState.SelectedLanguage == "da" ? "Annuller" : "Cancel")
+                    </button>
+
+                    <button class="btn btn-danger"
+                            @onclick="ConfirmDelete">
+                        @(LanguageState.SelectedLanguage == "da" ? "Slet" : "Delete")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public string TableName { get; set; } = "";
+
+    private List<Dictionary<string, object>> rows =
+        new List<Dictionary<string, object>>();
+
+    private bool showForm = false;
+
+    private Dictionary<string, object>? selectedRow;
+
+    private Dictionary<string, object>? rowToDelete;
+
+    private string saveErrorMessage = "";
+
+    private string deleteErrorMessage = "";
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(TableName))
+        {
+            rows = DatabaseService.GetTableData(TableName);
+        }
+    }
+
+    private void OpenAddForm()
+    {
+        selectedRow = null;
+        saveErrorMessage = "";
+        showForm = true;
+    }
+
+    private void OpenEditForm(Dictionary<string, object> row)
+    {
+        selectedRow = row;
+        saveErrorMessage = "";
+        showForm = true;
+    }
+
+    private void SaveRow(Dictionary<string, object> values)
+    {
+        try
+        {
+            if (selectedRow == null)
+            {
+                DatabaseService.InsertRow(TableName, values);
+            }
+            else
+            {
+                int id = Convert.ToInt32(selectedRow["Id"]);
+
+                DatabaseService.UpdateRow(TableName, id, values);
+            }
+
+            rows = DatabaseService.GetTableData(TableName);
+
+            selectedRow = null;
+            showForm = false;
+            saveErrorMessage = "";
+        }
+        catch (Exception)
+        {
+            saveErrorMessage =
+                "The data could not be saved. Please check that all required fields contain valid values.";
+        }
+    }
+
+    private void CloseForm()
+    {
+        selectedRow = null;
+        saveErrorMessage = "";
+        showForm = false;
+    }
+
+    private void ConfirmDelete()
+    {
+        if (rowToDelete == null)
+        {
+            return;
+        }
+
+        try
+        {
+            int id = Convert.ToInt32(rowToDelete["Id"]);
+
+            DatabaseService.DeleteRow(TableName, id);
+
+            rows = DatabaseService.GetTableData(TableName);
+
+            rowToDelete = null;
+            deleteErrorMessage = "";
+        }
+        catch (Exception)
+        {
+            deleteErrorMessage =
+                "This row cannot be deleted because it is being used by other data.";
+        }
+    }
+
+    private void CancelDelete()
+    {
+        rowToDelete = null;
+        deleteErrorMessage = "";
+    }
+
+    protected override void OnInitialized()
+    {
+        LanguageState.OnLanguageChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        LanguageState.OnLanguageChanged -= StateHasChanged;
+    }
+}

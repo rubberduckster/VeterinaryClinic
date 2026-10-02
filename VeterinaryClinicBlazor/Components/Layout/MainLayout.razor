@@ -6,8 +6,8 @@
     <header class="topbar">
         <a href="/" class="brand">
             @(LanguageState.SelectedLanguage == "da"
-                        ? "Dyreklinik"
-                        : "Veterinary Clinic")
+                ? "Dyreklinik Database"
+                : "Veterinary Clinic Database")
         </a>
 
         <select class="language-select" @bind="LanguageState.SelectedLanguage">

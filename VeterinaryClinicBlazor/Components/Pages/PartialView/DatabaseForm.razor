@@ -1,0 +1,193 @@
+﻿@using VeterinaryClinic.Services
+@inject DatabaseService DatabaseService
+
+@if (IsVisible)
+{
+    <div class="database-form">
+        <h3>@Title</h3>
+
+        @foreach (KeyValuePair<string, string> column in columnNames)
+        {
+            <div class="mb-3">
+                <label class="form-label">@column.Key</label>
+
+                @if (column.Value == "date")
+                {
+                    <small class="form-text text-muted d-block">
+                        Format: Year-Month-Day [yyyy-MM-dd]
+                    </small>
+                }
+                else if (column.Value == "datetime2")
+                {
+                    <small class="form-text text-muted d-block">
+                        Format: Year-Month-Day Hour:Minute:Second [yyyy-MM-dd HH:mm:ss]
+                    </small>
+                }
+
+                <input class="form-control"
+                       @bind="formValues[column.Key]" />
+
+                @if (fieldErrors.ContainsKey(column.Key))
+                {
+                    <div class="text-danger">
+                        @fieldErrors[column.Key]
+                    </div>
+                }
+            </div>
+        }
+
+        <button class="btn btn-primary" @onclick="Save">
+            Save
+        </button>
+
+        <button class="btn btn-secondary" @onclick="Cancel">
+            Cancel
+        </button>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public string TableName { get; set; } = "";
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public EventCallback<Dictionary<string, object>> OnSave { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancel { get; set; }
+
+    [Parameter]
+    public Dictionary<string, object>? Row { get; set; }
+
+    private Dictionary<string, string> columnNames =
+        new Dictionary<string, string>();
+
+    private Dictionary<string, string> formValues =
+        new Dictionary<string, string>();
+
+    private Dictionary<string, string> fieldErrors =
+    new Dictionary<string, string>();
+
+    private string previousTableName = "";
+    private object? previousRowId;
+
+    protected override void OnParametersSet()
+    {
+        if (!IsVisible)
+        {
+            previousTableName = "";
+            previousRowId = null;
+            return;
+        }
+
+        object? currentRowId = null;
+
+        if (Row != null && Row.ContainsKey("Id"))
+        {
+            currentRowId = Row["Id"];
+        }
+
+        bool formChanged =
+            TableName != previousTableName ||
+            !Equals(currentRowId, previousRowId);
+
+        if (!string.IsNullOrEmpty(TableName) && formChanged)
+        {
+            columnNames = DatabaseService.GetColumnNames(TableName);
+
+            formValues.Clear();
+            fieldErrors.Clear();
+
+            foreach (KeyValuePair<string, string> column in columnNames)
+            {
+                if (Row != null && Row.ContainsKey(column.Key))
+                {
+                    formValues.Add(
+                        column.Key,
+                        Row[column.Key]?.ToString() ?? "");
+                }
+                else
+                {
+                    formValues.Add(column.Key, "");
+                }
+            }
+
+            previousTableName = TableName;
+            previousRowId = currentRowId;
+        }
+    }
+
+    private async Task Save()
+    {
+        Dictionary<string, object> convertedValues =
+            new Dictionary<string, object>();
+
+        fieldErrors.Clear();
+
+        foreach (KeyValuePair<string, string> column in columnNames)
+        {
+            string value = formValues[column.Key];
+            string dataType = column.Value;
+
+            object convertedValue;
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                convertedValue = DBNull.Value;
+            }
+            else if (dataType == "int")
+            {
+                if (int.TryParse(value, out int intValue))
+                {
+                    convertedValue = intValue;
+                }
+                else
+                {
+                    fieldErrors[column.Key] =
+                        $"{column.Key} must be a valid number.";
+
+                    continue;
+                }
+            }
+            else if (dataType == "date" || dataType == "datetime2")
+            {
+                if (DateTime.TryParse(value, out DateTime dateValue))
+                {
+                    convertedValue = dateValue;
+                }
+                else
+                {
+                    fieldErrors[column.Key] =
+                        $"{column.Key} must be a valid date.";
+
+                    continue;
+                }
+            }
+            else
+            {
+                convertedValue = value;
+            }
+
+            convertedValues.Add(column.Key, convertedValue);
+        }
+
+        if (fieldErrors.Count > 0)
+        {
+            return;
+        }
+
+        await OnSave.InvokeAsync(convertedValues);
+    }
+
+    private async Task Cancel()
+    {
+        fieldErrors.Clear();
+        await OnCancel.InvokeAsync();
+    }
+}
